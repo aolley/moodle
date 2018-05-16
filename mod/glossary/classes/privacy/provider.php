@@ -130,7 +130,8 @@ class provider implements
                   FROM {glossary_entries} ge
                   JOIN {glossary} g ON ge.glossaryid = g.id
                   JOIN {course_modules} cm ON g.id = cm.instance
-                  JOIN {context} c ON cm.id = c.instanceid
+                  JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                  JOIN {context} c ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
                  WHERE c.id {$contextsql}
                    AND ge.userid = :userid
              OR EXISTS (SELECT 1 FROM {comments} com WHERE com.commentarea = :commentarea AND com.itemid = ge.id
@@ -141,6 +142,8 @@ class provider implements
                    AND r.userid = :ratinguserid)
                ORDER BY ge.id, cm.id";
         $params = [
+            'modulename' => 'glossary',
+            'contextlevel' => CONTEXT_MODULE,
             'userid' => $user->id,
             'commentarea' => 'glossary_entry',
             'commentuserid' => $user->id,
