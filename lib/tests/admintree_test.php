@@ -365,7 +365,7 @@ class core_admintree_testcase extends advanced_testcase {
         $adminsetting = new admin_setting_configduration('abc_cde/duration', 'some desc', '', '');
 
         // A value that isn't a number is treated as a zero, so we expect to see no error message.
-        $this->assertEquals('', $adminsetting->write_setting(['u' => '3600', 'v' => 'abc']));
+        $this->assertEmpty($adminsetting->write_setting(['u' => '3600', 'v' => 'abc']));
     }
 
     /**
