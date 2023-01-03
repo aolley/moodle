@@ -294,8 +294,16 @@ class cache_factory_disabled extends cache_factory {
                 $definition = $this->create_definition($component, $area);
                 // The cachestore_static class returns true to all three 'SUPPORTS_' checks so it
                 // can be used with all definitions.
-                $cache = new cachestore_static('TEMP:' . $component . '/' . $area);
-                $cache->initialise($definition);
+                $details = [
+                    'name' => 'TEMP:' . $component . '/' . $area,
+                    'plugin' => 'static',
+                    'class' => 'cachestore_static',
+                    'configuration' => [],
+                    'default' => true,
+                ];
+                $store = $this->create_store_from_config($details['name'], $details, $definition);
+                $cache = new cache_application($definition, $store, null);
+
                 self::$tempcaches[$key] = $cache;
             }
             return $cache;
