@@ -692,10 +692,14 @@ class question_bank_helper {
      * @return bool
      */
     public static function has_bank_migration_task_completed_successfully(): bool {
+        global $DB;
         $defaultbank = self::get_default_question_bank_activity_name();
-        $task = manager::get_adhoc_tasks("\\mod_{$defaultbank}\\task\\transfer_question_categories");
-        $subtasks = manager::get_adhoc_tasks("\\mod_{$defaultbank}\\task\\transfer_questions");
-        return empty($task) && empty($subtasks);
+        // Only an existence check is needed, so avoid loading (and instantiating) every queued task.
+        [$insql, $params] = $DB->get_in_or_equal([
+            manager::get_canonical_class_name("\\mod_{$defaultbank}\\task\\transfer_question_categories"),
+            manager::get_canonical_class_name("\\mod_{$defaultbank}\\task\\transfer_questions"),
+        ]);
+        return !$DB->record_exists_select('task_adhoc', "classname {$insql}", $params);
     }
 
     /**
